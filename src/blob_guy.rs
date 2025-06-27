@@ -4,9 +4,14 @@ pub struct Pos {
     x: f64,
     y: f64,
 }
+impl Pos {
+    pub fn new(x: f64, y: f64) -> Self {
+        Self { x, y }
+    }
+}
 #[derive(Default)]
 pub struct Blob {
-    pos: Pos,
+    pub pos: Pos,
 }
 impl Blob {
     pub fn update(&mut self) {

@@ -1,5 +1,5 @@
+use crate::noita::pixel::NoitaPixelRun;
 use std::{ffi::c_void, mem};
-
 pub(crate) mod ntypes;
 pub(crate) mod pixel;
 
@@ -49,7 +49,7 @@ impl ParticleWorldState {
         start_y: i32,
         end_x: i32,
         end_y: i32,
-        mut pixel_runs: *mut pixel::NoitaPixelRun,
+        pixel_runs: &mut Vec<NoitaPixelRun>,
     ) -> usize {
         // Allow compiler to generate better code.
         assert_eq!(start_x % 128, 0);
@@ -89,11 +89,11 @@ impl ParticleWorldState {
         let built_runner = self.runner.build();
         let runs = built_runner.len();
         for run in built_runner {
-            let noita_pixel_run = unsafe { pixel_runs.as_mut().unwrap() };
-            noita_pixel_run.length = (run.length - 1) as u16;
-            noita_pixel_run.material = run.data.material;
-            noita_pixel_run.flags = run.data.flags;
-            pixel_runs = unsafe { pixel_runs.offset(1) };
+            pixel_runs.push(NoitaPixelRun {
+                length: (run.length - 1) as u16,
+                material: run.data.material,
+                flags: run.data.flags,
+            })
         }
         self.runner.clear();
         runs
